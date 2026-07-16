@@ -36,26 +36,27 @@ export default function PlayPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const nameRef = useRef("");
 
-  // Keep nameRef in sync so the message handler always has the latest name
+  // Sinkronisasi ref agar event listener selalu mendapat nama terbaru
   useEffect(() => {
     nameRef.current = studentName;
   }, [studentName]);
 
   // -----------------------------------------------------------------------
-  // postMessage listener — listens for scores from Ren'Py iframe
+  // 3 & 4. Perbarui useEffect & Validasi Ketat Pesan dari Ren'Py
   // -----------------------------------------------------------------------
   const handleMessage = useCallback(async (event: MessageEvent) => {
     const data = event.data;
 
-    // Validate that the message has the expected shape from Ren'Py
+    // Validasi ketat: Abaikan event yang bukan object atau tidak memiliki 3 key spesifik
+    if (!data || typeof data !== "object") return;
+    
+    // Pastikan key persis case-sensitive: verification, deepfake, financial
     if (
-      data === null ||
-      typeof data !== "object" ||
-      typeof data.verification === "undefined" ||
-      typeof data.deepfake === "undefined" ||
-      typeof data.financial === "undefined"
+      !("verification" in data) ||
+      !("deepfake" in data) ||
+      !("financial" in data)
     ) {
-      return; // Not our message, ignore
+      return; // Abaikan pesan dari ekstensi browser / React DevTools
     }
 
     const currentName = nameRef.current;
@@ -68,19 +69,19 @@ export default function PlayPage() {
     const storyMode: string = data.story_mode || "Story D";
     const maxScores = SCORE_MAX[storyMode] || SCORE_MAX["Story D"];
 
-    // Normalize raw scores to 0-100 scale
+    // Normalisasi skor
     const scoreVerification = normalizeScore(data.verification, maxScores.verification);
     const scoreDeepfake = normalizeScore(data.deepfake, maxScores.deepfake);
     const scoreFinancial = normalizeScore(data.financial, maxScores.financial);
 
-    // Generate evaluation note
+    // 5. Jalankan fungsi helper "Keterangan Evaluasi"
     const evaluationNote = generateEvaluationNote({
       score_verification: scoreVerification,
       score_deepfake: scoreDeepfake,
       score_financial: scoreFinancial,
     });
 
-    // Insert to Supabase
+    // 6. Insert seluruh data ke Supabase
     const { error } = await supabase.from("students_evaluation").insert({
       student_name: currentName.trim(),
       story_mode: storyMode,
@@ -97,6 +98,7 @@ export default function PlayPage() {
       return;
     }
 
+    // 7. Ubah state UI ke sukses (iframe akan di-unmount karena pergantian fase)
     setSavedResult({
       student_name: currentName.trim(),
       story_mode: storyMode,
@@ -113,23 +115,19 @@ export default function PlayPage() {
     return () => window.removeEventListener("message", handleMessage);
   }, [handleMessage]);
 
-  // -----------------------------------------------------------------------
-  // Start game handler
-  // -----------------------------------------------------------------------
   const handleStart = () => {
     if (!studentName.trim()) return;
     setPhase("playing");
   };
 
   // -----------------------------------------------------------------------
-  // Render: Input Phase
+  // Render: Fase Input Nama
   // -----------------------------------------------------------------------
   if (phase === "input") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
         <Card className="w-full max-w-md border-slate-800 bg-slate-900">
           <CardHeader>
-
             <CardTitle className="text-2xl text-white">
               DeepTrust — Simulasi
             </CardTitle>
@@ -169,24 +167,25 @@ export default function PlayPage() {
   }
 
   // -----------------------------------------------------------------------
-  // Render: Playing Phase (full-screen iframe)
+  // Render: Fase Bermain (Iframe Aktif)
   // -----------------------------------------------------------------------
   if (phase === "playing") {
     return (
-      <div className="relative h-screen w-screen bg-black">
-        <iframe
-          src="/renpy-build/index.html"
-          className="h-full w-full border-0"
-          title="DeepTrust Game"
-          allow="autoplay"
-          sandbox="allow-scripts allow-same-origin allow-popups"
-        />
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        {/* 2. Elemen iframe sesuai spesifikasi */}
+        <iframe 
+          src="/renpy-build/index.html" 
+          width="100%" 
+          height="800px" 
+          frameBorder="0" 
+          allowFullScreen
+        ></iframe>
       </div>
     );
   }
 
   // -----------------------------------------------------------------------
-  // Render: Saved Phase — success notification
+  // Render: Fase Berhasil Menyimpan
   // -----------------------------------------------------------------------
   if (phase === "saved" && savedResult) {
     return (
@@ -194,10 +193,10 @@ export default function PlayPage() {
         <Card className="w-full max-w-lg border-green-800 bg-slate-900">
           <CardHeader>
             <CardTitle className="text-2xl text-green-400">
-              ✅ Skor Berhasil Disimpan
+              Selesai! Data Evaluasi Berhasil Dikirim ke Dashboard Dosen
             </CardTitle>
             <CardDescription className="text-slate-400">
-              Data evaluasi {savedResult.student_name} telah dikirim ke sistem.
+              Berikut adalah rekapan evaluasi untuk {savedResult.student_name}.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -250,7 +249,7 @@ export default function PlayPage() {
   }
 
   // -----------------------------------------------------------------------
-  // Render: Error Phase
+  // Render: Fase Error
   // -----------------------------------------------------------------------
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
