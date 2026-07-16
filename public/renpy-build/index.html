@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeepTrust — Game Placeholder</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .container {
+      text-align: center;
+      max-width: 500px;
+      padding: 2rem;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #f8d66d; }
+    p { font-size: 0.95rem; margin-bottom: 1.5rem; color: #94a3b8; }
+    button {
+      padding: 12px 28px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 6px;
+      font-weight: 600;
+    }
+    .btn-a {
+      background: #2563eb;
+      color: white;
+    }
+    .btn-a:hover { background: #1d4ed8; }
+    .btn-d {
+      background: #dc2626;
+      color: white;
+    }
+    .btn-d:hover { background: #b91c1c; }
+    .info {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #1e293b;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 DeepTrust — Placeholder</h1>
+    <p>Ini adalah placeholder untuk build HTML5 Ren'Py.<br>
+    Klik tombol di bawah untuk mensimulasikan pengiriman skor ke Next.js.</p>
+
+    <button class="btn-a" onclick="sendScore('Story A', 2, 1, 1)">
+      Kirim Skor Story A (Sempurna)
+    </button>
+    <button class="btn-d" onclick="sendScore('Story D', 2, 2, 2)">
+      Kirim Skor Story D (Sempurna)
+    </button>
+    <br>
+    <button class="btn-a" onclick="sendScore('Story A', 0, 0, -1)">
+      Kirim Skor Story A (Gagal)
+    </button>
+    <button class="btn-d" onclick="sendScore('Story D', 1, 0, 0)">
+      Kirim Skor Story D (Gagal)
+    </button>
+
+    <div class="info">
+      Ganti folder ini dengan build HTML5 Ren'Py yang asli.<br>
+      File game harus di-build melalui Ren'Py Launcher → Build → Web.
+    </div>
+  </div>
+
+  <script>
+    function sendScore(storyMode, verification, deepfake, financial) {
+      window.parent.postMessage({
+        verification: verification,
+        deepfake: deepfake,
+        financial: financial,
+        story_mode: storyMode
+      }, '*');
+      document.querySelector('.info').textContent = '✅ Skor terkirim! story_mode=' + storyMode +
+        ', verification=' + verification + ', deepfake=' + deepfake + ', financial=' + financial;
+    }
+  </script>
+</body>
+</html>
