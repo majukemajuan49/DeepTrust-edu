@@ -1,93 +1,233 @@
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang="en-us">
+
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>DeepTrustV1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DeepTrust — Game Placeholder</title>
+  <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
+  <link rel="icon" href="icons/icon-72x72.png" sizes="72x72" type="image/png" />
+  <link rel="icon" href="icons/icon-96x96.png" sizes="96x96" type="image/png" />
+  <link rel="icon" href="icons/icon-128x128.png" sizes="128x128" type="image/png" />
+  <link rel="icon" href="icons/icon-144x144.png" sizes="144x144" type="image/png" />
+  <link rel="icon" href="icons/icon-152x152.png" sizes="152x152" type="image/png" />
+  <link rel="icon" href="icons/icon-192x192.png" sizes="192x192" type="image/png" />
+  <link rel="icon" href="icons/icon-384x384.png" sizes="384x384" type="image/png" />
+  <link rel="icon" href="icons/icon-512x512.png" sizes="512x512" type="image/png" />
+  <!-- ios support -->
+  <link rel="apple-touch-icon" href="icons/icon-72x72.png" sizes="72x72" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-96x96.png" sizes="96x96" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-128x128.png" sizes="128x128" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-144x144.png" sizes="144x144" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-152x152.png" sizes="152x152" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png" sizes="192x192" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-384x384.png" sizes="384x384" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/icon-512x512.png" sizes="512x512" type="image/png" />
+
+  <meta name="theme-color" content="#000" />
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+    html {
+      background: #444;
+      font-family: sans-serif;
+    }
+
+    body, html {
+      overscroll-behavior: none;
+    }
+
+    #canvas, #overlayDiv {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+
+      width: 100%;
+      height: 100%;
+
+      border: 0 none;
+    }
+
+    #canvas {
+      background: #000;
+    }
+
+    .visible {
+      visibility: visible;
+      opacity: 1.0;
+      transition: opacity .1s linear;
+    }
+
+    .hidden {
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s .25s, opacity .25s linear;
+    }
+
+    #statusDiv, #inputDiv {
+      background: rgba(0, 0, 0, 0.75);
+      width: 50%;
+      margin: auto;
+      min-width: 340px;
+      padding: 10px;
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      border-radius: 0 0 5px 5px;
+    }
+
+    #statusTextDiv {
+      overflow: auto;
+      max-height: 40vh;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    #statusProgress {
+      display: none;
+      width: 100%;
+    }
+
+    #inputDiv {
+      width: 65%;
+      padding-left: 10px;
+      padding-right: 20px;
+    }
+
+    #inputPrompt {
+      color: #eee;
+      font-size: 150%;
+      margin-bottom: 1em;
+      margin-top: 1em;
+
+    }
+
+    #inputText {
+      width: 100%;
+      font-size: 175%;
+      padding: 5px;
+      background: inherit;
+      color: #eee;
+    }
+
+    #inputText:focus {
+      color: #ffffff;
+    }
+
+    #ContextContainer {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      color: white;
+    }
+
+    #ContextContainer.shown {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 0px 0px 5px 0px;
+    }
+
+    #ContextButton {
+      text-decoration: none;
+      color: lightgrey;
+      font-size: xx-large;
+      cursor: pointer;
+      user-select: none;
+      -moz-user-select: none;
+      padding: 10px 10px;
+      opacity: .75;
+    }
+
+    #ContextButton:focus {
+      outline: none;
+      color: #ffffff;
+      opacity: 1.0;
+    }
+
+    #ContextMenu a {
+      text-decoration: none;
+      color: lightgrey;
+      background: #444;
+      height: 48px;
+      width: 250px;
+      border-radius: 5px;
+      border: 1px solid lightgrey;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      margin: 5px 5px;
+      opacity: 1.0;
     }
-    .container {
-      text-align: center;
-      max-width: 500px;
-      padding: 2rem;
+
+    #ContextMenu a:hover {
+      text-decoration: none;
+      background: #666666;
+      color: #ffffff
     }
-    h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #f8d66d; }
-    p { font-size: 0.95rem; margin-bottom: 1.5rem; color: #94a3b8; }
-    button {
-      padding: 12px 28px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      margin: 6px;
-      font-weight: 600;
+
+    #presplash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        margin: auto;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
     }
-    .btn-a {
-      background: #2563eb;
-      color: white;
-    }
-    .btn-a:hover { background: #1d4ed8; }
-    .btn-d {
-      background: #dc2626;
-      color: white;
-    }
-    .btn-d:hover { background: #b91c1c; }
-    .info {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background: #1e293b;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      color: #64748b;
-    }
+
   </style>
+
 </head>
+
 <body>
-  <div class="container">
-    <h1>🎮 DeepTrust — Placeholder</h1>
-    <p>Ini adalah placeholder untuk build HTML5 Ren'Py.<br>
-    Klik tombol di bawah untuk mensimulasikan pengiriman skor ke Next.js.</p>
+  <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+  <div id="overlayDiv"></div>
 
-    <button class="btn-a" onclick="sendScore('Story A', 2, 1, 1)">
-      Kirim Skor Story A (Sempurna)
-    </button>
-    <button class="btn-d" onclick="sendScore('Story D', 2, 2, 2)">
-      Kirim Skor Story D (Sempurna)
-    </button>
-    <br>
-    <button class="btn-a" onclick="sendScore('Story A', 0, 0, -1)">
-      Kirim Skor Story A (Gagal)
-    </button>
-    <button class="btn-d" onclick="sendScore('Story D', 1, 0, 0)">
-      Kirim Skor Story D (Gagal)
-    </button>
+  <img id="presplash" src="web-presplash.jpg">
 
-    <div class="info">
-      Ganti folder ini dengan build HTML5 Ren'Py yang asli.<br>
-      File game harus di-build melalui Ren'Py Launcher → Build → Web.
+  <div id="ContextContainer">
+    <a id="ContextButton">&#8801;</a><br />
+    <div id="ContextMenu" style="display: none;">
+      <input id="ID_SavegamesImport" type="file" onchange="onSavegamesImport(this)" accept="application/zip"
+        style=display:none></input>
+      <a href="javascript:document.getElementById('ID_SavegamesImport').click();">Import Saves</a>
+      <a href="javascript:onSavegamesExport();">Export Saves</a>
+      <a href="javascript:FSDownload('/log.txt', 'text/plain');">Download Log</a>
+      <a href="https://www.renpy.org/" target="_blank">
+          Powered by Ren'Py
+      </a>
+      </span>
     </div>
   </div>
 
+  <div id="statusDiv" class="hidden">
+    <div id="statusTextDiv"></div>
+    <progress id="statusProgress" value="0" max="100"></progress>
+  </div>
+
+  <div id="inputDiv" class="hidden">
+    <form id="inputForm">
+      <div id="inputPrompt"></div>
+      <input id="inputText" type="text">
+    </form>
+  </div>
+
   <script>
-    function sendScore(storyMode, verification, deepfake, financial) {
-      window.parent.postMessage({
-        verification: verification,
-        deepfake: deepfake,
-        financial: financial,
-        story_mode: storyMode
-      }, '*');
-      document.querySelector('.info').textContent = '✅ Skor terkirim! story_mode=' + storyMode +
-        ', verification=' + verification + ', deepfake=' + deepfake + ', financial=' + financial;
-    }
+      // The URL to game.zip, relative to the URL of this file.
+      window.gameZipURL = 'game.zip';
+
+      // Register the service worker.
+      if (navigator.serviceWorker) {
+          if (!navigator.serviceWorker.controller) {
+              navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'all' });
+          }
+      }
   </script>
+  <script src="renpy-pre.js"></script>
+  <script async type="text/javascript" src="renpy.js"></script>
 </body>
+
 </html>
