@@ -129,11 +129,9 @@ export default function DashboardPage() {
       <header className="border-b bg-white px-6 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <Image
-              src="/logo.png"
+            <img
+              src="/logo.png?v=2"
               alt="DeepTrust Logo"
-              width={40}
-              height={40}
               className="h-8 w-auto object-contain"
             />
             <div>

@@ -8,13 +8,10 @@ export default function Home() {
         {/* Logo Container */}
         <div className="mx-auto mb-6 flex justify-center">
           <div className="inline-flex items-center justify-center bg-white w-20 h-20 rounded-full shadow-xl">
-            <Image
-              src="/logo.png"
+            <img
+              src="/logo.png?v=2"
               alt="DeepTrust Logo"
-              width={70}
-              height={70}
               className="h-16 w-auto object-contain"
-              priority
             />
           </div>
         </div>
